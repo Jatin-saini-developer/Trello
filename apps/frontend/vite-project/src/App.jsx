@@ -5,6 +5,7 @@ import './App.css'
 function App() {
 
   const [issues, setIssues] = useState([]);
+  const [ws, setWs] = useState();
 
   const [todoInput, setTodoInput] = useState("");
   const [inProgressInput, setInProgressInput] = useState("");
@@ -12,6 +13,7 @@ function App() {
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3005");
+    setWs(ws);
 
     ws.onmessage = (ev) => {
       const data = ev.data;
@@ -25,6 +27,10 @@ function App() {
         setIssues(i => [...i, parsedData.issue])
       }
 
+      if (parsedData.type == "delete_issue") {
+        setIssues(issues => issues.filter(x => x.id != parsedData.issueId))
+      }
+
     }
 
   }, [])
@@ -34,7 +40,16 @@ function App() {
         <div style={{ flex: 1 }}>
           Todo
           <input type="text" placeholder='issue title' value={todoInput} onChange={(e) => setTodoInput(e.target.value)} />
-          {issues.filter(i => i.section == "todo").map(issue => <Card key={issue.id} id={issue.id} title={issue.title} />)}
+          <button onClick={() => {
+            ws.send(JSON.stringify({
+              type: "issue_added",
+              title: todoInput,
+              section: "todo"
+            }))
+          }}> Add Issues
+
+          </button>
+          {issues.filter(i => i.section == "todo").map(issue => <Card key={issue.id} ws={ws} id={issue.id} title={issue.title} />)}
 
         </div>
 
@@ -49,13 +64,22 @@ function App() {
             }))
 
           }}>Add issue</button>
-          {issues.filter(i => i.section == "progress").map(issue => <Card key={issue.id} id={issue.id} title={issue.title} />)}
+          {issues.filter(i => i.section == "progress").map(issue => <Card key={issue.id} ws={ws} id={issue.id} title={issue.title} />)}
 
         </div>
         <div style={{ flex: 1 }}>
           Done
           <input type="text" placeholder='issue title' value={doneInput} onChange={(e) => setDoneInput(e.target.value)} />
-          {issues.filter(i => i.section == "done").map(issue => <Card key={issue.id} id={issue.id} title={issue.title} />)}
+          <button onClick={() => {
+            ws.send(JSON.stringify({
+              type: "issue_added",
+              title: doneInput,
+              section: "done"
+            }))
+          }}> Add Issues
+
+          </button>
+          {issues.filter(i => i.section == "done").map(issue => <Card key={issue.id} ws={ws} id={issue.id} title={issue.title} />)}
 
         </div>
       </div>
@@ -64,9 +88,15 @@ function App() {
 }
 
 
-function Card({ title }) {
+function Card({ ws, id, title }) {
   return <div style={{ border: "1px solid black", padding: 20, margin: 20 }}>
     {title}
+    <button onClick={() => {
+      ws.send(JSON.stringify({
+        type: "delete_issue",
+        issueId: id
+      }))
+    }} >Delete</button>
   </div>
 }
 

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+
 
 import './App.css'
+import SignUp from './pages/SignUp';
 
 function App() {
 
@@ -35,7 +38,13 @@ function App() {
 
   }, [])
   return (
+
     <>
+      <Routes>
+        <Route path='/signup' element={<SignUp/>}/>
+
+      </Routes>
+
       <div style={{ display: 'flex' }}>
         <div style={{ flex: 1 }}>
           Todo

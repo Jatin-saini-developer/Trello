@@ -1,7 +1,8 @@
 import express from 'express';
-import User from '../models/userModal';
+import User from '../models/userModal.js';
+import generateToken from '../utils/generateToken.js';
 
-const router = express.Router;
+const router = express.Router();
 
 router.post('/signup', async (req, res) => {
     try {
@@ -26,7 +27,7 @@ router.post('/signup', async (req, res) => {
             success: true,
             message: "Account created successfully.",
             token,
-            user: user.toPublicJSON(),
+            // user: user.toPublicJSON(),
         });
     } catch (error) {
         // Handle Mongoose validation errors
@@ -47,3 +48,5 @@ router.post('/signup', async (req, res) => {
 
     }
 })
+
+export default router;

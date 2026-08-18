@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcryptjs';
 import User from '../models/userModal.js';
 import generateToken from '../utils/generateToken.js';
 
@@ -46,6 +47,53 @@ router.post('/signup', async (req, res) => {
             message: "Internal server error.",
         });
 
+    }
+})
+
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validate request body
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required.",
+            });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        // Compare provided password with stored hash
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        // Generate token
+        const token = generateToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Logged in successfully.",
+            token,
+        });
+    } catch (error) {
+        console.error("Login error:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+        });
     }
 })
 

@@ -20,4 +20,4 @@ const orgSchema = new mongoose.Schema(
 
 const Org = mongoose.model('Org', orgSchema);
 
-module.exports = Org;
+export default Org

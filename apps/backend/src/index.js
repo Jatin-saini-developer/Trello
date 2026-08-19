@@ -5,6 +5,7 @@ import connectDB from './config/Database.js';
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
+import createOrgRoutes from './routes/createOrgRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ── Routes ───────────────────────────────────────────────
 app.use('/api/auth', authRoutes);         // POST /api/auth/signup, etc.
+app.use('/api/createorg', createOrgRoutes);         
 
 // ── Start Server ─────────────────────────────────────────
 const startServer = async () => {

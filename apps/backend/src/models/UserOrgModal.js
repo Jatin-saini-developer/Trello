@@ -28,4 +28,4 @@ userOrgSchema.index({ userId: 1, orgId: 1 }, { unique: true });
 
 const UserOrg = mongoose.model('UserOrg', userOrgSchema);
 
-module.exports = UserOrg;
+export default UserOrg

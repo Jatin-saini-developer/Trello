@@ -7,7 +7,7 @@ const SectionModal = new mongoose.Schema({
     },
     boardId :{
         type : mongoose.Schema.Types.ObjectId,
-        ref : Board,
+        ref : 'Board',
     }
 })
 

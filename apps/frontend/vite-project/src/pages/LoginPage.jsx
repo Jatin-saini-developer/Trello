@@ -28,8 +28,8 @@ const LoginPage = () => {
             // Store token
             localStorage.setItem('token', data.token);
 
-            // Redirect to home/dashboard
-            navigate('/');
+            // Redirect to 
+            navigate('/createOrg');
         } catch (err) {
             const message = err.response?.data?.message || "Something went wrong.";
             setError(message);

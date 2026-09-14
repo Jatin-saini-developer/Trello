@@ -36,7 +36,7 @@ const SignUp = () => {
             localStorage.setItem('token', data.token);
 
             // Redirect to home/dashboard
-            navigate('/');
+            navigate('/createOrg');
         } catch (err) {
             // axios wraps server errors in err.response
             const message = err.response?.data?.message || "Something went wrong.";

@@ -5,6 +5,7 @@ import api from "../utils/api.js";
 const CreateOrgPage = () => {
     const navigate = useNavigate();
     const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
@@ -22,11 +23,12 @@ const CreateOrgPage = () => {
             const token = localStorage.getItem("token");
             const { data } = await api.post(
                 "/createorg",
-                { name: name.trim() },
+                { name: name.trim(), description: description.trim() },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setSuccess(`"${data.org.name}" created successfully!`);
             setName("");
+            setDescription("");
             // Redirect after short delay
             setTimeout(() => navigate("/dashboard"), 1500);
         } catch (err) {
@@ -109,6 +111,24 @@ const CreateOrgPage = () => {
                             required
                             autoFocus
                             className="w-full px-4 py-2.5 rounded-xl border border-[#E0DDD6] bg-[#FAFAF8] text-[#1A1A1A] text-sm placeholder-[#C4BFB8] outline-none transition-all duration-150 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/15 focus:bg-white"
+                        />
+                    </div>
+
+                    {/* Org Description */}
+                    <div className="flex flex-col gap-1.5">
+                        <label
+                            htmlFor="orgDesc"
+                            className="text-[11px] font-semibold text-[#9B9590] uppercase tracking-widest"
+                        >
+                            Description (Optional)
+                        </label>
+                        <textarea
+                            id="orgDesc"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="What does your team do?"
+                            rows={3}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E0DDD6] bg-[#FAFAF8] text-[#1A1A1A] text-sm placeholder-[#C4BFB8] outline-none transition-all duration-150 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/15 focus:bg-white resize-none"
                         />
                     </div>
 

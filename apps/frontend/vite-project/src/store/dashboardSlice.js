@@ -90,6 +90,11 @@ const dashboardSlice = createSlice({
         setBoardsActionError(state, action) {
             state.error.boards = action.payload;
         },
+
+        // Called when modal is closed — clear any stale error.
+        clearBoardsActionError(state) {
+            state.error.boards = null;
+        },
     },
 });
 
@@ -103,6 +108,7 @@ export const {
     addBoard,
     setSelectedOrg,
     setBoardsActionError,
+    clearBoardsActionError,
 } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

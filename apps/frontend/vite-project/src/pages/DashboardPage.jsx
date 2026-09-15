@@ -29,7 +29,6 @@ const DashboardPage = () => {
                 const token = localStorage.getItem('token');
                 const { data } = await api.get(
                     '/dashboard/me/organizations',
-                    {},
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 dispatch(setOrgs(data.orgs)); // [{ orgId, name, description, role }]

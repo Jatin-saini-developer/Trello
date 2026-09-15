@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addBoard, setBoardsActionError } from '../../store/dashboardSlice.js';
+import { addBoard, setBoardsActionError, clearBoardsActionError } from '../../store/dashboardSlice.js';
 import api from '../../utils/api.js';
 
 const CreateBoardModal = ({ onClose }) => {
@@ -19,10 +19,15 @@ const CreateBoardModal = ({ onClose }) => {
 
     // Close the modal when the user presses Escape.
     useEffect(() => {
-        const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+        const handleKey = (e) => {
+            if (e.key === 'Escape') {
+                dispatch(clearBoardsActionError());
+                onClose();
+            }
+        };
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
-    }, [onClose]);
+    }, [onClose, dispatch]);
 
     // Called when the form is submitted — create the board via the API.
     const handleSubmit = async (e) => {
@@ -48,7 +53,8 @@ const CreateBoardModal = ({ onClose }) => {
             onClose();
         } catch (err) {
             const message = err.response?.data?.error || 'Failed to create board';
-            dispatch(setBoardsActionError(message));
+            // Keep the error local to the modal — don't pollute the global board error.
+            setLocalError(message);
         } finally {
             setSubmitting(false);
         }
@@ -72,7 +78,7 @@ const CreateBoardModal = ({ onClose }) => {
                             New Board
                         </h2>
                         <button
-                            onClick={onClose}
+                            onClick={() => { dispatch(clearBoardsActionError()); onClose(); }}
                             className="w-7 h-7 flex items-center justify-center rounded-lg text-[#9B9590] hover:bg-[#F0EDE6] hover:text-[#1A1A1A] transition-all duration-150"
                         >
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

@@ -33,6 +33,9 @@ router.post('/', authMiddleware, async (req, res) => {
     } catch (error) {
         await session.abortTransaction();
         console.error('Create org error:', error);
+        if (error.code === 11000) {
+            return res.status(409).json({ message: 'Organisation name already taken' });
+        }
         return res.status(500).json({ message: 'Internal server error' });
     } finally {
         session.endSession();

@@ -7,6 +7,7 @@ import connectDB from './config/Database.js';
 import authRoutes from './routes/authRoutes.js';
 import createOrgRoutes from './routes/createOrgRoutes.js'
 import dashBoardRoutes from './routes/dashBoardRoutes.js'
+import sectionRoutes from './routes/sectionRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);         // POST /api/auth/signup, etc.
 app.use('/api/createorg', createOrgRoutes);
 app.use('/api/dashboard', dashBoardRoutes);
+app.use('/api/dashboard/organizations', sectionRoutes);
+
 
 // ── Start Server ─────────────────────────────────────────
 const startServer = async () => {

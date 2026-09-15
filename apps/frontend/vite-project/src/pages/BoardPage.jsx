@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     setSectionsLoading,
     setSections,
+    addSection,
     setSectionsError,
     setIssuesLoading,
     setIssues,
@@ -62,6 +63,16 @@ const BoardPage = () => {
     const dispatch = useDispatch();
 
     const { sections, issues, loading, error } = useSelector((s) => s.board);
+    const [addingSection, setAddingSection] = useState(false);
+    const [sectionTitle, setSectionTitle] = useState('');
+    const [sectionSubmitting, setSectionSubmitting] = useState(false);
+    const sectionInputRef = useRef(null);
+
+    useEffect(() => {
+        if (addingSection) {
+            sectionInputRef.current?.focus();
+        }
+    }, [addingSection]);
 
     // Fetch sections and issues in parallel on mount
     useEffect(() => {
@@ -105,6 +116,46 @@ const BoardPage = () => {
 
         fetchData();
     }, [orgId, boardId, dispatch]);
+
+    const handleAddSection = async () => {
+        if (sectionSubmitting) {
+            return;
+        }
+
+        const title = sectionTitle.trim();
+
+        if (!title) {
+            return;
+        }
+
+        setSectionSubmitting(true);
+
+        try {
+            const token = localStorage.getItem('token');
+            const { data } = await api.post(
+                `/dashboard/organizations/${orgId}/boards/${boardId}/sections`,
+                { title },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            dispatch(addSection(data.section));
+            setSectionTitle('');
+            setAddingSection(false);
+        } catch (err) {
+            console.error('Failed to create section', err);
+        } finally {
+            setSectionSubmitting(false);
+        }
+    };
+
+    const cancelAddSection = () => {
+        if (sectionSubmitting) {
+            return;
+        }
+
+        setAddingSection(false);
+        setSectionTitle('');
+    };
 
     const isLoading = loading.sections || loading.issues;
     const errorMessage = error.sections || error.issues;
@@ -160,9 +211,9 @@ const BoardPage = () => {
 
                 {!isLoading && errorMessage && <ErrorBanner message={errorMessage} />}
 
-                {!isLoading && !errorMessage && sections.length === 0 && <EmptyState />}
+                {!isLoading && !errorMessage && sections.length === 0 && !addingSection && <EmptyState />}
 
-                {!isLoading && !errorMessage && sections.length > 0 && (
+                {!isLoading && !errorMessage && (
                     <div className="flex gap-4 items-start">
                         {sections.map((section) => {
                             const sectionIssues = issues.filter(
@@ -176,6 +227,57 @@ const BoardPage = () => {
                                 />
                             );
                         })}
+
+                        <div className="shrink-0 w-[272px] bg-[#F7F4F0] rounded-2xl border border-[#E8E4DC] px-3 py-3">
+                            {!addingSection ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setAddingSection(true)}
+                                    className="w-full text-left text-[13px] text-[#9B9590] hover:text-[#1A1A1A] hover:bg-[#ECEAE4] rounded-xl px-3 py-2 transition-colors duration-150 flex items-center gap-2"
+                                >
+                                    <span aria-hidden="true">+</span>
+                                    Add section
+                                </button>
+                            ) : (
+                                <div className="space-y-3">
+                                    <input
+                                        ref={sectionInputRef}
+                                        type="text"
+                                        value={sectionTitle}
+                                        onChange={(e) => setSectionTitle(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleAddSection();
+                                            }
+
+                                            if (e.key === 'Escape') {
+                                                cancelAddSection();
+                                            }
+                                        }}
+                                        placeholder="Section title"
+                                        className="border border-[#E0DDD6] rounded-xl px-3 py-2 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/15 text-sm w-full outline-none bg-white text-[#1A1A1A] placeholder-[#C4BFB8] transition-all duration-150"
+                                    />
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={handleAddSection}
+                                            disabled={sectionSubmitting}
+                                            className="bg-[#D97757] text-white rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-[#C96A49] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                                        >
+                                            Add
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={cancelAddSection}
+                                            disabled={sectionSubmitting}
+                                            className="text-[#9B9590] hover:text-[#1A1A1A] rounded-lg px-2 py-1.5 text-sm transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </main>

@@ -34,6 +34,10 @@ const boardSlice = createSlice({
             state.sections = action.payload;
         },
 
+        addSection(state, action) {
+            state.sections.push(action.payload);
+        },
+
         // Called when the fetch sections API request fails — store the error message.
         setSectionsError(state, action) {
             state.loading.sections = false;
@@ -65,6 +69,7 @@ const boardSlice = createSlice({
 export const {
     setSectionsLoading,
     setSections,
+    addSection,
     setSectionsError,
     setIssuesLoading,
     setIssues,

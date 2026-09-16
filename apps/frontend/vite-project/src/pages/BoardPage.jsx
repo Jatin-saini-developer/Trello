@@ -224,6 +224,8 @@ const BoardPage = () => {
                                     key={section._id}
                                     section={section}
                                     issues={sectionIssues}
+                                    orgId={orgId}
+                                    boardId={boardId}
                                 />
                             );
                         })}

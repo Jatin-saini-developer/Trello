@@ -81,7 +81,7 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
         <div
             className="
                 flex flex-col gap-2 shrink-0
-                w-[272px]
+                w-68
                 bg-[#F7F4F0] rounded-2xl border border-[#E8E4DC]
                 px-3 pt-3 pb-4
                 max-h-[calc(100vh-120px)]

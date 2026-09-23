@@ -74,6 +74,13 @@ router.post('/organizations/:orgId/boards', authMiddleware, async (req, res) => 
 
         const board = await Board.create({ title, orgId });
 
+        // Auto-create 3 default sections for every new board
+        await Section.insertMany([
+            { title: 'Upcoming', boardId: board._id },
+            { title: 'In Progress', boardId: board._id },
+            { title: 'Done', boardId: board._id },
+        ]);
+
         return res.status(201).json({ board });
     } catch (err) {
         console.error(err);

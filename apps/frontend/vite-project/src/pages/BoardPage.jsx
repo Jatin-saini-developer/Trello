@@ -19,7 +19,7 @@ const ColumnSkeleton = () => (
         {[...Array(4)].map((_, i) => (
             <div
                 key={i}
-                className="shrink-0 w-[272px] rounded-2xl bg-[#ECEAE4] animate-pulse"
+                className="shrink-0 w-68 rounded-2xl bg-[#ECEAE4] animate-pulse"
                 style={{ height: `${220 + i * 40}px` }}
             />
         ))}
@@ -230,7 +230,7 @@ const BoardPage = () => {
                             );
                         })}
 
-                        <div className="shrink-0 w-[272px] bg-[#F7F4F0] rounded-2xl border border-[#E8E4DC] px-3 py-3">
+                        <div className="shrink-0 w-68 bg-[#F7F4F0] rounded-2xl border border-[#E8E4DC] px-3 py-3">
                             {!addingSection ? (
                                 <button
                                     type="button"

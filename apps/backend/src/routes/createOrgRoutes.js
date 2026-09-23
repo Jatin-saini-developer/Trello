@@ -13,32 +13,43 @@ router.post('/', authMiddleware, async (req, res) => {
         return res.status(400).json({ message: 'Organization name is required' });
     }
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
         const userId = req.user.id;
 
-        const org = await Org.create([{ name: name.trim(), description }], { session });
+        // Check if this user already has an org with this name (case-insensitive).
+        const userMemberships = await UserOrg.find({ userId }).populate('orgId');
+        const nameExists = userMemberships.some(
+            (m) => m.orgId.name.toLowerCase() === name.trim().toLowerCase()
+        );
+        if (nameExists) {
+            return res.status(400).json({ message: 'You already have an organization with this name' });
+        }
 
-        const membership = await UserOrg.create([{
-            userId,
-            orgId: org[0]._id,
-            role: 'admin'
-        }], { session });
+        const session = await mongoose.startSession();
+        session.startTransaction();
 
-        await session.commitTransaction();
-        return res.status(201).json({ org: org[0], membership: membership[0] });
+        try {
+            const org = await Org.create([{ name: name.trim(), description }], { session });
+
+            const membership = await UserOrg.create([{
+                userId,
+                orgId: org[0]._id,
+                role: 'admin'
+            }], { session });
+
+            await session.commitTransaction();
+            session.endSession();
+            return res.status(201).json({ org: org[0], membership: membership[0] });
+
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+            throw error; // re-throw to the outer catch
+        }
 
     } catch (error) {
-        await session.abortTransaction();
         console.error('Create org error:', error);
-        if (error.code === 11000) {
-            return res.status(409).json({ message: 'Organisation name already taken' });
-        }
         return res.status(500).json({ message: 'Internal server error' });
-    } finally {
-        session.endSession();
     }
 });
 

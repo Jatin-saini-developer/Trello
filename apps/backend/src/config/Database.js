@@ -10,4 +10,15 @@ const connectDB = async () => {
   }
 }
 
+// Drop the old global unique index on orgs.name — uniqueness is now
+// enforced per-user in the route layer, not at the database level.
+mongoose.connection.once('open', async () => {
+  try {
+    await mongoose.connection.collection('orgs').dropIndex('name_1');
+    console.log('Dropped unique index on orgs.name');
+  } catch (e) {
+    // Index doesn't exist or was already dropped — safe to ignore.
+  }
+});
+
 export default connectDB

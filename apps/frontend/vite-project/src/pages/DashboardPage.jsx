@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     setOrgsLoading,
@@ -15,7 +16,13 @@ import CreateBoardModal from '../components/dashboard/CreateBoardModal.jsx';
 
 const DashboardPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login', { replace: true });
+    };
 
     const { selectedOrgId, orgs, userRole, loading } = useSelector(
         (s) => s.dashboard
@@ -113,6 +120,26 @@ const DashboardPage = () => {
                         </button>
                     ))}
                 </nav>
+
+                {/* Logout — pinned to bottom */}
+                <div className="mt-auto">
+                    <div className="h-px bg-[#ECEAE4] mb-3" />
+                    <button
+                        id="sidebar-logout-btn"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-[#7A7672] hover:text-[#C0432A] hover:bg-[#FEF3EE] transition-colors duration-150 text-left"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                            <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h3"
+                                  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                            <path d="M10 10l3-3-3-3"
+                                  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M13 7H6"
+                                  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                        </svg>
+                        Log out
+                    </button>
+                </div>
             </aside>
 
             {/* ── Main area ───────────────────────────────────── */}

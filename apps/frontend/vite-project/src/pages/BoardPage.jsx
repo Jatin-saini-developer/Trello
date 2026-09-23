@@ -62,6 +62,11 @@ const BoardPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login', { replace: true });
+    };
+
     const { sections, issues, loading, error } = useSelector((s) => s.board);
     const [addingSection, setAddingSection] = useState(false);
     const [sectionTitle, setSectionTitle] = useState('');
@@ -195,13 +200,34 @@ const BoardPage = () => {
                     </svg>
                 </div>
 
-                {/* Board name — shows boardId as placeholder (can be replaced with fetched name) */}
-                <h1 className="text-[15px] font-semibold text-[#1A1A1A] tracking-tight truncate">
+                {/* Board name */}
+                <h1 className="flex-1 text-[15px] font-semibold text-[#1A1A1A] tracking-tight truncate">
                     Board
                     <span className="ml-1.5 text-[13px] font-normal text-[#9B9590]">
                         #{boardId}
                     </span>
                 </h1>
+
+                {/* Logout */}
+                <button
+                    id="board-logout-btn"
+                    onClick={handleLogout}
+                    aria-label="Log out"
+                    className="
+                        w-8 h-8 rounded-lg flex items-center justify-center shrink-0
+                        text-[#7A7672] hover:text-[#C0432A] hover:bg-[#FEF3EE]
+                        transition-colors duration-150
+                    "
+                >
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                        <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h3"
+                              stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                        <path d="M10 10l3-3-3-3"
+                              stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M13 7H6"
+                              stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                    </svg>
+                </button>
             </header>
 
             {/* ── Board canvas ─────────────────────────────────── */}

@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { S, clamp } from '../lib/scroll'
 import { onTick } from '../lib/ticker'
+import { APP_URL } from '../lib/appUrl'
+
 
 export default function Hero() {
   const root = useRef(null)
@@ -39,8 +41,8 @@ export default function Hero() {
       <header className="fx">
         <a className="menu" href="#"><i />Menu</a>
         <a className="logo" href="#">boardly</a>
-        <a href="#">Start free</a>
-      </header>
+        <a href={APP_URL + '/signup'}>Start free</a>  
+       </header>
       <div className="hero" id="txt">
         <h1>
           <span className="ln"><span>Turn messy</span></span>
@@ -51,7 +53,7 @@ export default function Hero() {
         <span className="it since fx">Free for small teams</span>
         <div className="blurb fx">
           A visual workspace for tasks. Drop cards in, drag them around, and watch the plan take shape.
-          <br /><a className="cta" href="#">Start a board</a>
+          <br /><a className="cta" href={APP_URL + '/signup'}>Start a board</a>
         </div>
       </div>
       <div className="hint fx" />

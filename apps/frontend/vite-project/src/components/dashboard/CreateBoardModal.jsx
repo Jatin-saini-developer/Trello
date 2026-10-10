@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBoard, clearBoardsActionError } from '../../store/dashboardSlice.js';
 import api from '../../utils/api.js';
+import { BOARD_COLORS } from '../../utils/orgTile.js';
 
 const CreateBoardModal = ({ onClose }) => {
     const dispatch = useDispatch();
-    const { selectedOrgId, error } = useSelector((s) => s.dashboard);
+    const { selectedOrgId, error, boards } = useSelector((s) => s.dashboard);
 
     const [title, setTitle] = useState('');
     const [localError, setLocalError] = useState('');
@@ -68,6 +69,7 @@ const CreateBoardModal = ({ onClose }) => {
         }
     };
 
+    // the new board will be added last, so it gets the colour of the next slot in the list
     const preview = title.trim();
     const shownError = localError || error.boards;
 
@@ -88,7 +90,10 @@ const CreateBoardModal = ({ onClose }) => {
                     className={`pointer-events-auto w-full max-w-md overflow-hidden rounded-3xl border border-[#E4DDCD] bg-white shadow-[0_50px_90px_-30px_rgba(70,45,10,0.6)] transition-all duration-300 ease-out ${shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-6 scale-95 opacity-0'}`}
                 >
                     {/* Live preview: the board tile fills in as you type */}
-                    <div className="relative h-36 overflow-hidden bg-[#D97757]">
+                    <div
+                        className="relative h-36 overflow-hidden transition-colors duration-300"
+                        style={{ background: BOARD_COLORS[(boards?.length ?? 0) % BOARD_COLORS.length] }}
+                    >
                         <div className="absolute inset-0 flex gap-2 p-4 opacity-40">
                             {[2, 1, 1].map((n, i) => (
                                 <div key={i} className="flex-1 space-y-1.5 rounded-lg bg-white/30 p-1.5">

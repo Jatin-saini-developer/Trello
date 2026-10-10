@@ -9,3 +9,7 @@ export const initials = (s = '') => {
     const w = s.split(/\s+/).filter(Boolean);
     return (w.length > 1 ? w[0][0] + w[1][0] : s.slice(0, 2)).toUpperCase();
 };
+
+// Board cover colours, picked by position in the list. The New Board modal uses the
+// same list, so its live preview matches the card the new board will become.
+export const BOARD_COLORS = ['#D97757', '#6FB38E', '#9C8FE0', '#E9A23B', '#5FA8D3', '#C7799B'];

@@ -2,12 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addIssue } from '../../store/boardSlice.js';
 import api from '../../utils/api.js';
+import { tileColor } from '../../utils/orgTile.js';
 import IssueCard from './IssueCard.jsx';
 
-// SectionColumn - one Trello-style column for a single section.
+// SectionColumn - one column for a single section.
 // Props:
 //   section - section object { _id, title, boardId }
 //   issues  - array of issues already filtered for this section
+
+const field =
+    'w-full rounded-xl border border-[#E4DDCD] bg-[#FBF8F1] px-3 py-2 text-sm outline-none transition-all duration-150 placeholder:text-[#b3ab9b] focus:border-[#D97757] focus:bg-white focus:ring-2 focus:ring-[#D97757]/15';
 
 const SectionColumn = ({ section, issues, orgId, boardId }) => {
     const dispatch = useDispatch();
@@ -16,6 +20,9 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
     const [issueDescription, setIssueDescription] = useState('');
     const [issueSubmitting, setIssueSubmitting] = useState(false);
     const titleInputRef = useRef(null);
+
+    // Each section gets a colour from its name (used for the dot and the card bars)
+    const accent = tileColor(section.title);
 
     useEffect(() => {
         if (addingIssue) {
@@ -80,19 +87,18 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
     return (
         <div
             className="
-                flex flex-col gap-2 shrink-0
-                w-68
-                bg-[#F7F4F0] rounded-2xl border border-[#E8E4DC]
-                px-3 pt-3 pb-4
-                max-h-[calc(100vh-120px)]
+                flex max-h-[calc(100vh-9rem)] w-[17rem] shrink-0 flex-col gap-2
+                rounded-2xl border border-[#E4DDCD] bg-white/55 backdrop-blur-sm
+                px-3 pb-4 pt-3
             "
         >
             {/* Column header */}
-            <div className="flex items-center justify-between px-1 mb-1">
-                <h2 className="text-[13px] font-semibold text-[#1A1A1A] tracking-tight truncate">
-                    {section.title}
+            <div className="mb-1 flex items-center justify-between px-1">
+                <h2 className="flex min-w-0 items-center gap-2 text-[13px] font-bold tracking-tight">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: accent }} />
+                    <span className="truncate">{section.title}</span>
                 </h2>
-                <span className="text-[11px] font-semibold text-[#9B9590] bg-[#ECEAE4] rounded-full px-2 py-0.5 shrink-0 ml-2">
+                <span className="ml-2 shrink-0 rounded-full bg-[#ece5d6] px-2 py-0.5 text-[11px] font-medium text-[#7A756B]">
                     {issues.length}
                 </span>
             </div>
@@ -101,13 +107,13 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
                 <button
                     type="button"
                     onClick={() => setAddingIssue(true)}
-                    className="w-full text-left text-[13px] text-[#9B9590] hover:text-[#1A1A1A] hover:bg-[#ECEAE4] rounded-xl px-3 py-2 mb-2 transition-colors duration-150 flex items-center gap-2"
+                    className="mb-2 flex w-full items-center gap-2 rounded-xl border border-dashed border-[#d9d0bb] px-3 py-2 text-left text-[13px] font-bold text-[#7A756B] transition-all duration-150 hover:border-[#D97757]/60 hover:bg-white hover:text-[#C4603F]"
                 >
                     <span aria-hidden="true">+</span>
                     Add issue
                 </button>
             ) : (
-                <div className="space-y-2 mb-2">
+                <div className="mb-2 space-y-2 rounded-xl border border-[#E4DDCD] bg-white p-2.5 shadow-[0_16px_28px_-18px_rgba(70,45,10,0.5)]">
                     <input
                         ref={titleInputRef}
                         type="text"
@@ -115,7 +121,7 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
                         onChange={(e) => setIssueTitle(e.target.value)}
                         onKeyDown={handleIssueKeyDown}
                         placeholder="Issue title"
-                        className="border border-[#E0DDD6] rounded-xl px-3 py-2 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/15 text-sm w-full outline-none bg-white text-[#1A1A1A] placeholder-[#C4BFB8] transition-all duration-150"
+                        className={field}
                     />
                     <textarea
                         rows={2}
@@ -123,22 +129,23 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
                         onChange={(e) => setIssueDescription(e.target.value)}
                         onKeyDown={handleIssueKeyDown}
                         placeholder="Description"
-                        className="border border-[#E0DDD6] rounded-xl px-3 py-2 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/15 text-sm w-full outline-none bg-white text-[#1A1A1A] placeholder-[#C4BFB8] transition-all duration-150 resize-none"
+                        className={`${field} resize-none`}
                     />
                     <div className="flex items-center gap-2">
                         <button
                             type="button"
                             onClick={handleAddIssue}
-                            disabled={issueSubmitting}
-                            className="bg-[#D97757] text-white rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-[#C96A49] transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={issueSubmitting || !issueTitle.trim() || !issueDescription.trim()}
+                            className="group relative isolate overflow-hidden rounded-lg bg-[#D97757] px-4 py-1.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
                         >
+                            <span className="absolute inset-0 -z-10 translate-y-full bg-[#1B1A17] transition-transform duration-500 ease-out group-hover:translate-y-0" />
                             Add
                         </button>
                         <button
                             type="button"
                             onClick={cancelAddIssue}
                             disabled={issueSubmitting}
-                            className="text-[#9B9590] hover:text-[#1A1A1A] rounded-lg px-2 py-1.5 text-sm transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="rounded-lg px-2 py-1.5 text-sm text-[#7A756B] transition-colors duration-150 hover:text-[#1B1A17] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             Cancel
                         </button>
@@ -149,12 +156,12 @@ const SectionColumn = ({ section, issues, orgId, boardId }) => {
             {/* Issue list - scrollable */}
             <div className="flex flex-col gap-2 overflow-y-auto pr-0.5">
                 {issues.length === 0 ? (
-                    <p className="text-[12px] text-[#B5B0AA] text-center py-6">
-                        No issues
+                    <p className="rounded-xl border border-dashed border-[#E4DDCD] py-6 text-center text-xs text-[#9a9181]">
+                        No issues yet
                     </p>
                 ) : (
-                    issues.map((issue) => (
-                        <IssueCard key={issue._id} issue={issue} />
+                    issues.map((issue, i) => (
+                        <IssueCard key={issue._id} issue={issue} index={i} accent={accent} />
                     ))
                 )}
             </div>

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+}
+
+html, body { background: #F4EFE5; }
+
+/* The only custom CSS: keyframes Tailwind can't express */
+@keyframes hop { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(60%) } }
+@keyframes drift { 50% { transform: translate(112%, 8px) rotate(3deg) } }
+@keyframes hint { 50% { transform: translateY(22px) } }
